@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { SuspenseFallback } from '@/components/suspense-fallback/suspense-fallback';
 import ChunkErrorHandler from '@/utils/chunk-error-handler';
 
-const employeeLoginEnabled = import.meta.env.VITE_VELOX_EMPLOYEE_LOGIN === 'true';
+const employeeLoginEnabled = import.meta.env.VITE_VELOX_EMPLOYEE_LOGIN !== 'false';
 
 // Lazy load auth page components for better code splitting with chunk error handling
 const LoginPage = lazy(

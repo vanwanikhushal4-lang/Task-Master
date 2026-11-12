@@ -21,7 +21,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173). Sign-in and workspace data require a compatible backend. Set `VITE_API_URL` and `VITE_SOCKET_URL` in `.env.local` to point to it. For a backend configured for Employee ID sign-in, set `VITE_VELOX_EMPLOYEE_LOGIN=true`.
+Open [http://localhost:5173](http://localhost:5173). Sign-in and workspace data require a compatible backend. Set `VITE_API_URL` and `VITE_SOCKET_URL` in `.env.local` to point to it. Employee ID sign-in is enabled by default and requires an API configured for Employee ID authentication. Set `VITE_VELOX_EMPLOYEE_LOGIN=false` for a backend that uses email sign-in.
 
 ## Available Scripts
 
