@@ -23,6 +23,8 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173). Sign-in and workspace data require a compatible backend. Set `VITE_API_URL` and `VITE_SOCKET_URL` in `.env.local` to point to it. Employee ID sign-in is enabled by default and requires an API configured for Employee ID authentication. Set `VITE_VELOX_EMPLOYEE_LOGIN=false` for a backend that uses email sign-in.
 
+If you run the frontend on one computer and the Velox API on another, add `VELOX_DEV_API_TARGET=http://<server-ip>:5173` to `.env.local` and restart the dev server. Use the address of the running Velox app on that network. The dev server forwards sign-in and API requests so the browser can keep its session on the local frontend address.
+
 ## Available Scripts
 
 In the project directory, you can run:
