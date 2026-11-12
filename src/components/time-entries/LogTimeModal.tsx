@@ -1,0 +1,482 @@
+import React from 'react';
+import {
+  Alert,
+  Modal,
+  Flex,
+  Select,
+  Segmented,
+  DatePicker,
+  TimePicker,
+  Input,
+  InputNumber,
+  Form,
+  Button,
+  Spin,
+  appMessage,
+  dayjs,
+  type Dayjs,
+} from '@/shared/antd-imports';
+import { useTranslation } from 'react-i18next';
+import {
+  taskTimeLogsApiService,
+  IRecentProject,
+  ITaskInProject,
+} from '@/api/tasks/task-time-logs.api.service';
+import { projectsApiService } from '@/api/projects/projects.api.service';
+import { decodeHtmlEntities } from '@/utils/html-entities';
+
+const { TextArea } = Input;
+
+interface LogTimeModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+type TimeLogInputMode = 'duration' | 'timeRange';
+
+export const LogTimeModal: React.FC<LogTimeModalProps> = ({ open, onClose, onSuccess }) => {
+  const { t } = useTranslation('time-entries');
+  const [form] = Form.useForm();
+  const minutesAutoClearedRef = React.useRef(false);
+
+  const [projects, setProjects] = React.useState<IRecentProject[]>([]);
+  const [projectLoading, setProjectLoading] = React.useState(false);
+  const [selectedProject, setSelectedProject] = React.useState<IRecentProject | null>(null);
+
+  const [tasks, setTasks] = React.useState<ITaskInProject[]>([]);
+  const [taskSearchTerm, setTaskSearchTerm] = React.useState('');
+  const [taskLoading, setTaskLoading] = React.useState(false);
+  const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
+
+  const [inputMode, setInputMode] = React.useState<TimeLogInputMode>('duration');
+  const [submitting, setSubmitting] = React.useState(false);
+  const [formValues, setFormValues] = React.useState<{
+    date?: Dayjs;
+    hours?: number;
+    minutes?: number;
+    startTime?: Dayjs;
+    endTime?: Dayjs;
+  }>({});
+
+  const taskSearchTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => {
+    if (!open) return;
+    minutesAutoClearedRef.current = false;
+    const initialValues = {
+      date: dayjs(),
+      hours: 0,
+      minutes: 30,
+      startTime: dayjs().second(0).millisecond(0),
+      endTime: dayjs().second(0).millisecond(0).add(30, 'minute'),
+    };
+    form.resetFields();
+    form.setFieldsValue(initialValues);
+    setFormValues(initialValues);
+    setSelectedProject(null);
+    setSelectedTaskId(null);
+    setTasks([]);
+    setTaskSearchTerm('');
+    setInputMode('duration');
+
+    setProjectLoading(true);
+    projectsApiService
+      .getMyProjectsToTasks()
+      .then(res => {
+        if (res.done && Array.isArray(res.body)) {
+          setProjects(
+            res.body
+              .filter(p => Boolean(p.id && p.name))
+              .map(p => ({
+                id: p.id!,
+                name: p.name!,
+                color_code: p.color_code || '',
+                start_date: p.start_date,
+                end_date: p.end_date,
+              }))
+          );
+        } else {
+          setProjects([]);
+        }
+      })
+      .catch(() => {
+        setProjects([]);
+      })
+      .finally(() => {
+        setProjectLoading(false);
+      });
+  }, [open, form]);
+
+  React.useEffect(() => {
+    if (!selectedProject) {
+      setTasks([]);
+      return;
+    }
+    if (taskSearchTimerRef.current) clearTimeout(taskSearchTimerRef.current);
+
+    const fetchTasks = async () => {
+      setTaskLoading(true);
+      try {
+        const res = await taskTimeLogsApiService.getMyTasksInProject(
+          selectedProject.id,
+          taskSearchTerm || undefined
+        );
+        if (res.done) setTasks(res.body as ITaskInProject[]);
+      } catch {
+        setTasks([]);
+      } finally {
+        setTaskLoading(false);
+      }
+    };
+
+    if (!taskSearchTerm) {
+      fetchTasks();
+    } else {
+      taskSearchTimerRef.current = setTimeout(fetchTasks, 200);
+    }
+  }, [selectedProject, taskSearchTerm]);
+
+  React.useEffect(() => () => {
+    if (taskSearchTimerRef.current) clearTimeout(taskSearchTimerRef.current);
+  }, []);
+
+  const projectOptions = React.useMemo(
+    () =>
+      projects.map(p => ({
+        value: p.id,
+        label: decodeHtmlEntities(p.name),
+      })),
+    [projects]
+  );
+
+  const taskOptions = tasks.map(task => ({
+    value: task.id,
+    label: decodeHtmlEntities(task.name),
+  }));
+
+  const handleProjectChange = (projectId: string | undefined) => {
+    const found = projects.find(p => p.id === projectId) || null;
+    setSelectedProject(found);
+    setSelectedTaskId(null);
+    setTasks([]);
+    setTaskSearchTerm('');
+    form.setFieldsValue({ taskId: undefined });
+  };
+
+  const isDateDisabled = React.useCallback(
+    (current: Dayjs) => {
+      if (!current) return false;
+      if (current.toDate() > new Date()) return true;
+      if (selectedProject?.start_date && current.isBefore(dayjs(selectedProject.start_date).startOf('day'), 'day')) {
+        return true;
+      }
+      return false;
+    },
+    [selectedProject]
+  );
+
+  const isFormValid = () => {
+    if (!selectedProject || !selectedTaskId || !formValues.date) return false;
+    if (selectedProject.start_date && formValues.date.isBefore(dayjs(selectedProject.start_date).startOf('day'), 'day')) {
+      return false;
+    }
+    if (inputMode === 'duration') {
+      const h = Math.max(0, Number(formValues.hours || 0));
+      const m = Math.max(0, Math.min(59, Number(formValues.minutes || 0)));
+      return h * 60 + m > 0;
+    }
+    if (!formValues.startTime || !formValues.endTime) return false;
+    return formValues.endTime.isAfter(formValues.startTime);
+  };
+
+  const handleSubmit = async (values: any) => {
+    if (!selectedProject || !selectedTaskId) {
+      appMessage.error(t('selectProjectAndTaskError', { defaultValue: 'Please select a project and a task' }));
+      return;
+    }
+
+    const date: Dayjs = values.date;
+
+    if (
+      selectedProject.start_date &&
+      date.isBefore(dayjs(selectedProject.start_date).startOf('day'), 'day')
+    ) {
+      const errorMsg = t('projectStartDateError', {
+        date: dayjs(selectedProject.start_date).format('MMM DD, YYYY'),
+        defaultValue: 'Time cannot be logged before the project start date ({{date}})',
+      });
+      appMessage.warning({
+        content: errorMsg,
+        key: 'log-time-modal-project-start-date',
+      });
+      form.setFields([
+        {
+          name: 'date',
+          errors: [errorMsg],
+        },
+      ]);
+      return;
+    }
+
+    let secondsSpent = 0;
+    let formattedStart: Dayjs;
+
+    if (inputMode === 'duration') {
+      const hours = Math.max(0, Number(values.hours || 0));
+      const minutes = Math.max(0, Number(values.minutes || 0));
+      if (minutes > 59) {
+        form.setFields([{ name: 'minutes', errors: [t('minutesRangeError', { defaultValue: 'Minutes must be between 0 and 59' })] }]);
+        return;
+      }
+      secondsSpent = hours * 3600 + minutes * 60;
+      if (secondsSpent <= 0) {
+        form.setFields([{ name: 'hours', errors: [t('invalidTimeLoggedError', { defaultValue: 'Enter at least 1 minute' })] }]);
+        return;
+      }
+      const now = dayjs();
+      formattedStart = date.hour(now.hour()).minute(now.minute()).second(0).millisecond(0);
+    } else {
+      const startTime: Dayjs = values.startTime;
+      const endTime: Dayjs = values.endTime;
+      if (!startTime || !endTime || !endTime.isAfter(startTime)) {
+        form.setFields([
+          {
+            name: 'endTime',
+            errors: [t('endTimeAfterStartError', { defaultValue: 'End time must be after start time' })],
+          },
+        ]);
+        return;
+      }
+      secondsSpent = endTime.diff(startTime, 'second');
+      formattedStart = date.hour(startTime.hour()).minute(startTime.minute()).second(0).millisecond(0);
+    }
+
+    const requestBody = {
+      id: selectedTaskId,
+      project_id: selectedProject.id,
+      formatted_start: formattedStart.toISOString(),
+      seconds_spent: secondsSpent,
+      description: values.description || '',
+    };
+
+    setSubmitting(true);
+    try {
+      await taskTimeLogsApiService.create(requestBody);
+      onSuccess();
+      onClose();
+    } catch (error: any) {
+      const serverMessage = error?.response?.data?.message;
+      appMessage.error(serverMessage || t('logTimeError', { defaultValue: 'Failed to log time' }));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal
+      open={open}
+      onCancel={onClose}
+      centered
+      title={t('modalTitle', { defaultValue: 'Quick Time Entry' })}
+      footer={null}
+      width={440}
+      destroyOnHidden
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        onValuesChange={(changedValues, values) => {
+          // Only auto-clear if minutes is still at its untouched default — otherwise
+          // this would stomp a minutes value the user already entered themselves
+          // (e.g. entering "45" then "1" to mean 1h45m).
+          if ('hours' in changedValues && !minutesAutoClearedRef.current && values.minutes === 30) {
+            const incoming = Number(changedValues.hours);
+            if (!isNaN(incoming) && incoming > 0) {
+              minutesAutoClearedRef.current = true;
+              form.setFieldsValue({ minutes: 0 });
+              setFormValues({ ...values, minutes: 0 });
+              return;
+            }
+          }
+          setFormValues(values);
+        }}
+        requiredMark={false}
+      >
+        <Form.Item label={t('projectLabel', { defaultValue: 'Project' })} style={{ marginBottom: 12 }}>
+          <Select
+            aria-label={t('projectLabel', { defaultValue: 'Project' })}
+            showSearch
+            allowClear
+            optionFilterProp="label"
+            filterOption={(input, option) =>
+              String(option?.label ?? '').toLowerCase().includes(input.toLowerCase().trim())
+            }
+            placeholder={t('selectProjectPlaceholder', { defaultValue: 'Select project...' })}
+            value={selectedProject?.id}
+            options={projectOptions}
+            loading={projectLoading}
+            notFoundContent={projectLoading ? <Spin size="small" /> : null}
+            onChange={handleProjectChange}
+            style={{ width: '100%' }}
+          />
+        </Form.Item>
+
+        <Form.Item name="taskId" label={t('taskLabel', { defaultValue: 'Task' })} style={{ marginBottom: 12 }}>
+          <Select
+            showSearch
+            allowClear
+            filterOption={false}
+            disabled={!selectedProject}
+            placeholder={
+              selectedProject
+                ? t('selectTaskPlaceholder', { defaultValue: 'Select task...' })
+                : t('selectProjectFirstPlaceholder', { defaultValue: 'Select a project first' })
+            }
+            options={taskOptions}
+            loading={taskLoading}
+            notFoundContent={taskLoading ? <Spin size="small" /> : null}
+            onSearch={setTaskSearchTerm}
+            onChange={val => setSelectedTaskId(val || null)}
+            style={{ width: '100%' }}
+          />
+        </Form.Item>
+
+        {selectedProject?.start_date && dayjs(selectedProject.start_date).isAfter(dayjs(), 'day') && (
+          <Alert
+            type="warning"
+            showIcon
+            message={t('projectNotStartedWarningDesc', {
+              date: dayjs(selectedProject.start_date).format('MMM DD, YYYY'),
+              defaultValue:
+                'This project is scheduled to start on {{date}}. Time cannot be logged before the project start date.',
+            })}
+            style={{ marginBottom: 12 }}
+          />
+        )}
+
+        <Form.Item label={t('inputModeLabel', { defaultValue: 'Input Mode' })} style={{ marginBottom: 12 }}>
+          <Segmented
+            block
+            value={inputMode}
+            onChange={value => setInputMode(value as TimeLogInputMode)}
+            options={[
+              { label: t('durationMode', { defaultValue: 'Duration' }), value: 'duration' },
+              { label: t('timeRangeMode', { defaultValue: 'Time Range' }), value: 'timeRange' },
+            ]}
+          />
+        </Form.Item>
+
+        {inputMode === 'duration' ? (
+          <Flex gap={12} wrap="wrap" style={{ width: '100%' }}>
+            <Form.Item
+              name="date"
+              label={t('dateLabel', { defaultValue: 'Date' })}
+              extra={
+                selectedProject?.start_date
+                  ? t('projectStartDateHint', {
+                      date: dayjs(selectedProject.start_date).format('MMM DD, YYYY'),
+                      defaultValue: 'Project start date: {{date}}',
+                    })
+                  : undefined
+              }
+              rules={[{ required: true, message: t('selectDateError', { defaultValue: 'Select a date' }) }]}
+              style={{ flex: 1.4, minWidth: 160, marginBottom: 12 }}
+            >
+              <DatePicker
+                style={{ width: '100%' }}
+                disabledDate={isDateDisabled}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="hours"
+              label={t('hoursLabel', { defaultValue: 'Hours' })}
+              rules={[{ type: 'number', min: 0, message: t('hoursMinError', { defaultValue: 'Hours must be 0 or greater' }) }]}
+              style={{ flex: 1, minWidth: 80, marginBottom: 12 }}
+            >
+              <InputNumber min={0} precision={0} placeholder="0" style={{ width: '100%' }} />
+            </Form.Item>
+
+            <Form.Item
+              name="minutes"
+              label={t('minutesLabel', { defaultValue: 'Minutes' })}
+              rules={[{ type: 'number', min: 0, max: 59, message: t('minutesRangeError', { defaultValue: '0 – 59' }) }]}
+              style={{ flex: 1, minWidth: 80, marginBottom: 12 }}
+            >
+              <InputNumber min={0} max={59} precision={0} placeholder="0" style={{ width: '100%' }} />
+            </Form.Item>
+          </Flex>
+        ) : (
+          <>
+            <Form.Item
+              name="date"
+              label={t('dateLabel', { defaultValue: 'Date' })}
+              extra={
+                selectedProject?.start_date
+                  ? t('projectStartDateHint', {
+                      date: dayjs(selectedProject.start_date).format('MMM DD, YYYY'),
+                      defaultValue: 'Project start date: {{date}}',
+                    })
+                  : undefined
+              }
+              rules={[{ required: true, message: t('selectDateError', { defaultValue: 'Select a date' }) }]}
+              style={{ marginBottom: 12 }}
+            >
+              <DatePicker
+                style={{ width: '100%' }}
+                disabledDate={isDateDisabled}
+              />
+            </Form.Item>
+
+            <Flex gap={12} style={{ width: '100%' }}>
+              <Form.Item
+                name="startTime"
+                label={t('startTimeLabel', { defaultValue: 'Start Time' })}
+                rules={[{ required: true, message: t('selectStartTimeError', { defaultValue: 'Select a start time' }) }]}
+                style={{ flex: 1, marginBottom: 12 }}
+              >
+                <TimePicker format="HH:mm" style={{ width: '100%' }} />
+              </Form.Item>
+
+              <Form.Item
+                name="endTime"
+                label={t('endTimeLabel', { defaultValue: 'End Time' })}
+                rules={[{ required: true, message: t('selectEndTimeError', { defaultValue: 'Select an end time' }) }]}
+                style={{ flex: 1, marginBottom: 12 }}
+              >
+                <TimePicker format="HH:mm" style={{ width: '100%' }} />
+              </Form.Item>
+            </Flex>
+          </>
+        )}
+
+        <Form.Item
+          name="description"
+          label={t('workDescriptionLabel', { defaultValue: 'Work Description' })}
+          style={{ marginBottom: 16 }}
+        >
+          <TextArea
+            placeholder={t('workDescriptionPlaceholder', { defaultValue: 'What did you work on?' })}
+            maxLength={500}
+            showCount
+            autoSize={{ minRows: 2, maxRows: 3 }}
+          />
+        </Form.Item>
+
+        <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={submitting}
+            disabled={!isFormValid()}
+            style={{ height: 30, fontSize: 12, borderRadius: 7, paddingInline: 12 }}
+          >
+            {t('logTimeButton', { defaultValue: 'Log Time' })}
+          </Button>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+};

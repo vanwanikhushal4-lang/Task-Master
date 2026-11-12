@@ -1,0 +1,45 @@
+{
+  "employeeId": {
+    "label": "ID de empleado",
+    "required": "Introduce tu ID de empleado.",
+    "invalid": "No se pudo iniciar sesión. Comprueba tu ID de empleado y tu contraseña.",
+    "signIn": "Iniciar sesión"
+  },
+  "headline": "Bienvenido de nuevo",
+  "headerDescription": "Inicia sesión en tu espacio de trabajo de Velox.",
+  "signInWithLabel": "Iniciar sesión con",
+  "orText": "o",
+  "emailLabel": "Correo electrónico",
+  "emailPlaceholder": "tu@empresa.com",
+  "emailRequired": "¡Por favor ingresa tu correo electrónico!",
+  "nextButton": "Siguiente",
+  "changeEmailLink": "Cambiar",
+  "passwordLabel": "Contraseña",
+  "passwordPlaceholder": "Ingresa tu contraseña",
+  "passwordRequired": "¡Por favor ingresa tu contraseña!",
+  "loginButton": "Iniciar sesión",
+  "signupButton": "Registrarse",
+  "forgotPasswordButton": "¿Olvidaste tu contraseña?",
+  "signInWithGoogleButton": "google",
+  "signInWithGoogleAriaLabel": "Iniciar sesión con Google",
+  "signInWithAppleButton": "manzana",
+  "signInWithAppleAriaLabel": "Iniciar sesión con Apple",
+  "dontHaveAccountText": "¿No tienes una cuenta?",
+  "bySigningInText": "Al iniciar sesión, aceptas nuestros",
+  "andText": "y",
+  "termsOfServiceLink": "Términos de Servicio",
+  "privacyPolicyLink": "Política de Privacidad",
+  "successMessage": "¡Has iniciado sesión exitosamente!",
+  "loginError": "Iniciar sesión falló",
+  "googleLoginError": "Iniciar sesión con Google falló",
+  "appleLoginError": "Iniciar sesión con Apple falló",
+  "validationMessages": {
+    "email": "Por favor ingresa una dirección de correo electrónico válida",
+    "password": "La contraseña debe tener al menos 8 caracteres"
+  },
+  "errorMessages": {
+    "loginErrorTitle": "Iniciar sesión falló",
+    "loginErrorMessage": "Por favor verifica tu correo electrónico y contraseña y vuelve a intentarlo"
+  },
+  "rememberMe": "Recuérdame"
+}

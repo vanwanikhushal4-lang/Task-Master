@@ -1,0 +1,127 @@
+import { IProject } from '@/types/project/project.types';
+import { ITeamMemberViewModel } from '../teamMembers/teamMembersGetResponse.types';
+import { ITask } from '../tasks/task.types';
+import { InlineMember } from '../teamMembers/inlineMember.types';
+
+export interface IProjectPermissions {
+  settings: boolean;
+  statuses: boolean;
+  phases: boolean;
+  customColumns: boolean;
+  members: {
+    add: boolean;
+    removeMember: boolean;
+    changeMemberRole: boolean;
+  };
+  tasks: boolean;
+  saveAsTemplate: boolean;
+  finance: boolean;
+  archive: boolean;
+  delete: boolean;
+  move: boolean;
+  assignPm: boolean;
+  insights: boolean;
+  files: boolean;
+  updates: boolean;
+  docs: boolean;
+  roadmap: boolean;
+  workload: boolean;
+}
+
+export interface IProjectViewModel extends IProject {
+  key?: string;
+  client_name?: string | null;
+  project_owner?: string;
+  updated_at?: string;
+  updated_at_string?: string;
+  status?: string;
+  status_color?: string;
+  status_icon?: string;
+  start_date?: string | null;
+  end_date?: string | null;
+  phase_label?: string;
+  /** Delivery mode: general PM vs software (issues/sprints/backlog). */
+  project_type?: ProjectType;
+  /** Software projects: archive Done issues when a sprint is completed. */
+  auto_archive_on_sprint_complete?: boolean;
+  /** Software projects: start / complete sprints automatically on their dates. */
+  auto_start_complete_sprints?: boolean;
+  /** Software projects: allowed story point values. */
+  story_point_scale?: number[];
+  category_name?: string;
+  category_color?: string;
+  category_id?: string | null;
+  health_id?: string | null;
+  task_count?: number;
+  members_count?: number;
+  progress?: number;
+  all_tasks_count?: number;
+  completed_tasks_count?: number;
+
+  favorite?: boolean;
+  archived?: boolean;
+  loading?: boolean;
+  collapsed?: boolean;
+  subscribed?: boolean;
+
+  members?: ITeamMemberViewModel[];
+  owner?: ITeamMemberViewModel | null;
+  tasks?: ITask[];
+  names?: Array<InlineMember>;
+
+  project_manager?: ITeamMemberViewModel | null;
+  project_manager_id?: string | null;
+
+  priority_id?: string | null;
+  priority_name?: string | null;
+  priority_color?: string | null;
+  priority_color_dark?: string | null;
+
+  team_member_default_view?: string;
+  task_list_group_by?: 'status' | 'priority' | 'phase' | 'assignee';
+  board_group_by?: 'status' | 'priority' | 'phase' | 'assignee';
+  working_days?: number;
+
+  id?: string;
+  name?: string;
+  description?: string;
+  notes?: string;
+  color_code?: string;
+  status_id?: string;
+  status_name?: string;
+  status_color_dark?: string;
+  health_name?: string;
+  health_color?: string;
+  health_color_dark?: string;
+  category_color_dark?: string;
+  client_id?: string;
+  total_tasks?: number;
+  completed_tasks?: number;
+  tasks_progress?: number;
+  man_days?: number;
+  hours_per_day?: number;
+  default_view?: string;
+  task_key_prefix?: string;
+  use_manual_progress?: boolean;
+  use_weighted_progress?: boolean;
+  use_time_progress?: boolean;
+  auto_assign_task_creator?: boolean;
+  restrict_task_creation?: boolean;
+  phase_assignees_enabled?: boolean;
+  restrict_tasks_to_assignee?: boolean;
+  auto_assign_subtask_phase?: boolean;
+  currency?: string;
+  budget?: number;
+  calculation_method?: 'hourly' | 'man_days';
+  is_guest?: boolean; // Indicates if current user is a guest in this project
+
+  /** Current user's project-scoped permissions (from GET project). Key UI by project id. */
+  permissions?: IProjectPermissions | null;
+  is_project_manager?: boolean;
+  /** Current user's finance access on this project. */
+  finance_access?: boolean;
+  can_create_projects_from_templates?: boolean;
+}
+
+export type ProjectType = 'general' | 'software';
+

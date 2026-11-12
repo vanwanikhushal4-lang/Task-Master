@@ -1,0 +1,10 @@
+{
+  "pageTitle": "App Móvel",
+  "pageDescription": "Baixe o app Velox no iOS ou Android. Escaneie o QR code com seu celular ou toque no badge da loja.",
+  "modalTitle": "Baixe o Velox no celular",
+  "appStoreBadgeAlt": "Baixar na App Store",
+  "googlePlayBadgeAlt": "Disponível no Google Play",
+  "bannerText": "Velox está disponível no iOS e Android.",
+  "bannerCta": "Ver códigos QR",
+  "bannerDismiss": "Fechar banner do app móvel"
+}

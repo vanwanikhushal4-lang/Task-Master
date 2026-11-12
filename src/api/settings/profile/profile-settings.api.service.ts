@@ -1,0 +1,149 @@
+import apiClient from '@api/api-client';
+import { API_BASE_URL } from '@/shared/constants';
+import { IServerResponse } from '@/types/common.types';
+import { IAppSumoPopupClaim, IProfileSettings } from '@/types/settings/profile.types';
+import { IDigestPreferences, INotificationSettings } from '@/types/settings/notifications.types';
+import {
+  IAccountSetupRequest,
+  IAccountSetupResponse,
+} from '@/types/project-templates/project-templates.types';
+import { ITeam } from '@/types/teams/team.type';
+import { IClientPortalSettings } from '@/types/settings/client-portal-settings.types';
+
+const rootUrl = `${API_BASE_URL}/settings`;
+const digestUrl = `${API_BASE_URL}/digest`;
+
+export const profileSettingsApiService = {
+  getProfile: async (): Promise<IServerResponse<IProfileSettings>> => {
+    const response = await apiClient.get<IServerResponse<IProfileSettings>>(`${rootUrl}/profile`);
+    return response.data;
+  },
+
+  updateProfile: async (body: IProfileSettings): Promise<IServerResponse<IProfileSettings>> => {
+    const response = await apiClient.put<IServerResponse<IProfileSettings>>(
+      `${rootUrl}/profile`,
+      body
+    );
+    return response.data;
+  },
+
+  getNotificationSettings: async (): Promise<IServerResponse<INotificationSettings>> => {
+    const response = await apiClient.get<IServerResponse<INotificationSettings>>(
+      `${rootUrl}/notifications`
+    );
+    return response.data;
+  },
+
+  updateNotificationSettings: async (
+    body: INotificationSettings
+  ): Promise<IServerResponse<INotificationSettings>> => {
+    const response = await apiClient.put<IServerResponse<INotificationSettings>>(
+      `${rootUrl}/notifications`,
+      body
+    );
+    return response.data;
+  },
+
+  setupAccount: async (
+    body: IAccountSetupRequest
+  ): Promise<IServerResponse<IAccountSetupResponse>> => {
+    const response = await apiClient.post<IServerResponse<IAccountSetupResponse>>(
+      `${rootUrl}/setup`,
+      body
+    );
+    return response.data;
+  },
+
+  updateTeamName: async (id: string, body: ITeam): Promise<IServerResponse<ITeam>> => {
+    const response = await apiClient.put<IServerResponse<ITeam>>(
+      `${rootUrl}/team-name/${id}`,
+      body
+    );
+    return response.data;
+  },
+
+  changePassword: async (body: {
+    new_password: string;
+    confirm_password: string;
+    password: string;
+  }): Promise<IServerResponse<any>> => {
+    const response = await apiClient.post<IServerResponse<any>>(
+      `${API_BASE_URL}/change-password`,
+      body
+    );
+    return response.data;
+  },
+
+  getDigestPreferences: async (): Promise<IServerResponse<IDigestPreferences>> => {
+    const response = await apiClient.get<IServerResponse<IDigestPreferences>>(
+      `${digestUrl}/preferences`
+    );
+    return response.data;
+  },
+
+  updateDigestPreferences: async (
+    body: IDigestPreferences
+  ): Promise<IServerResponse<IDigestPreferences>> => {
+    const response = await apiClient.put<IServerResponse<IDigestPreferences>>(
+      `${digestUrl}/preferences`,
+      body
+    );
+    return response.data;
+  },
+
+  // Client Portal Settings
+  getClientPortalSettings: async (): Promise<IServerResponse<IClientPortalSettings>> => {
+    const response = await apiClient.get<IServerResponse<IClientPortalSettings>>(
+      `${rootUrl}/client-portal`
+    );
+    return response.data;
+  },
+
+  updateClientPortalSettings: async (
+    body: Partial<IClientPortalSettings>
+  ): Promise<IServerResponse<IClientPortalSettings>> => {
+    const response = await apiClient.put<IServerResponse<IClientPortalSettings>>(
+      `${rootUrl}/client-portal`,
+      body
+    );
+    return response.data;
+  },
+
+  uploadClientPortalLogo: async (
+    logoData: string
+  ): Promise<IServerResponse<{ logo_url: string }>> => {
+    const response = await apiClient.post<IServerResponse<{ logo_url: string }>>(
+      `${rootUrl}/client-portal/upload-logo`,
+      { logoData }
+    );
+    return response.data;
+  },
+
+  dismissMobileAppBanner: async (): Promise<IServerResponse<null>> => {
+    const response = await apiClient.put<IServerResponse<null>>(
+      `${rootUrl}/mobile-app-banner-dismissed`
+    );
+    return response.data;
+  },
+
+  /**
+   * Asks the server whether the AppSumo promo popup may be shown now and, if so, records it.
+   * Background call: the silent header keeps the response interceptor from toasting a failure
+   * (the popup falls back to its local gate instead). On a server-side failure the body is null.
+   */
+  claimAppSumoPopup: async (): Promise<IServerResponse<IAppSumoPopupClaim | null>> => {
+    const response = await apiClient.post<IServerResponse<IAppSumoPopupClaim | null>>(
+      `${rootUrl}/appsumo-popup/claim`,
+      undefined,
+      { headers: { 'X-Silent-Request': '1' } }
+    );
+    return response.data;
+  },
+
+  getClientPortalBaseUrl: async (): Promise<IServerResponse<{ baseUrl: string }>> => {
+    const response = await apiClient.get<IServerResponse<{ baseUrl: string }>>(
+      `${rootUrl}/client-portal/base-url`
+    );
+    return response.data;
+  },
+};

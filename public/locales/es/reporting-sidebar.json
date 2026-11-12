@@ -1,0 +1,12 @@
+{
+  "overview": "Resumen",
+  "projects": "Proyectos",
+  "members": "Miembros",
+  "timeReports": "Informes de Tiempo",
+  "timesheet": "Hoja de tiempo",
+  "estimateVsActual": "Estimado vs Real",
+  "logs": "Registros",
+  "allTasks": "Tareas",
+  "progressTracking": "Seguimiento del progreso",
+  "currentOrganizationTooltip": "Organización actual"
+}

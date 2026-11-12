@@ -1,0 +1,98 @@
+{
+  "backlogGroupName": "Rückstand",
+  "task": {
+    "open": "Öffnen",
+    "clickViewPhaseDetails": "Klicken Sie, um Phasendetails anzuzeigen",
+    "clickNavigateTimeline": "Klicken Sie, um zur Aufgabe in der Zeitleiste zu navigieren",
+    "clickTimelineSetDates": "Klicken Sie auf die Zeitleiste, um Daten für diese Aufgabe festzulegen",
+    "clickTimelineAddDates": "Zeitleiste klicken, um Daten hinzuzufügen",
+    "setTaskDate": "Aufgabendaten festlegen",
+    "setTaskDateHint": "Klicken Sie auf die Zeitleiste, um einen {{duration}}-Tage-Zeitraum für diese Aufgabe festzulegen",
+    "addTask": "Aufgabe hinzufügen",
+    "resizeStartDate": "Startdatum ändern",
+    "resizeEndDate": "Enddatum ändern",
+    "dragToMove": "Ziehen, um Aufgabe zu verschieben",
+    "addTaskFor": "Aufgabe hinzufügen für {{date}}",
+    "enterTaskName": "Aufgabenname eingeben...",
+    "pressEnterToCreate": "Enter zum Erstellen • Esc zum Abbrechen",
+    "phaseTitle": "Phase: {{name}} - {{startDate}} bis {{endDate}}",
+    "taskTitle": "{{name}} - {{startDate}} bis {{endDate}}",
+    "datesUpdatedSuccessfully": "Aufgabendaten erfolgreich aktualisiert",
+    "failedToUpdateDates": "Aktualisierung der Aufgabendaten fehlgeschlagen",
+    "addSubtask": "Unteraufgabe hinzufügen",
+    "addTaskInputPlaceholder": "Aufgabennamen eingeben und Enter zum Speichern drücken",
+    "writeTaskName": "Aufgabennamen eingeben",
+    "writeSubtaskName": "Unteraufgabennamen eingeben",
+    "expandSubtasks": "Unteraufgaben erweitern",
+    "collapseSubtasks": "Unteraufgaben reduzieren",
+    "finishToStartDependency": "Ende-Anfang-Abhängigkeit",
+    "startToFinishDependency": "Anfang-Ende-Abhängigkeit",
+    "dependencyType": "Abhängigkeitstyp",
+    "removeDependency": "Entfernen",
+    "removeDependencyTooltip": "Abhängigkeit entfernen",
+    "circularDependencyError": "Dies würde eine zirkuläre Abhängigkeit erzeugen.",
+    "dependencyCreatedSuccessfully": "Abhängigkeit erfolgreich erstellt.",
+    "dependencyRemovedSuccessfully": "Abhängigkeit erfolgreich entfernt.",
+    "failedToCreateDependency": "Fehler beim Erstellen der Abhängigkeit.",
+    "failedToRemoveDependency": "Fehler beim Entfernen der Abhängigkeit.",
+    "taskAddedToRoadmap": "Aufgabe wurde für die nächsten 5 Tage zur Roadmap hinzugefügt.",
+    "failedToAddTaskToRoadmap": "Fehler beim Hinzufügen der Aufgabe zur Roadmap.",
+    "unscheduledTaskNotFound": "Ausgewählte Aufgabe konnte nicht gefunden werden.",
+    "undatedTaskReadOnly": "Aufgabe ohne Datum (nur für Gäste lesbar)"
+  },
+  "common": {
+    "noStart": "Kein Start",
+    "noEnd": "Kein Ende"
+  },
+  "sections": {
+    "unmapped": "Nicht zugeordnet"
+  },
+  "grouping": {
+    "phase": "Phase",
+    "status": "Alle Status",
+    "priority": "Priorität"
+  },
+  "toolbar": {
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "expandAll": "Alle erweitern",
+    "collapseAll": "Alle reduzieren",
+    "today": "Heute",
+    "fullscreen": "Vollbild",
+    "noDate": "Kein Datum",
+    "viewBy": "Ansicht nach",
+    "sortBy": "Sortieren nach",
+    "sortManual": "Manuell",
+    "sortChronological": "Chronologisch"
+  },
+  "viewMode": {
+    "day": "Tag",
+    "week": "Woche",
+    "month": "Monat",
+    "quarter": "Quartal",
+    "year": "Jahr"
+  },
+  "businessPlan": {
+    "phaseCreationRestricted": "Phasenerstellung ist nur für Business-Plan-Nutzer verfügbar",
+    "taskCreationRestricted": "Aufgabenerstellung ist nur für Business-Plan-Nutzer verfügbar",
+    "phaseEditingRestricted": "Phasenbearbeitung ist nur für Business-Plan-Nutzer verfügbar",
+    "taskEditingRestricted": "Aufgabenbearbeitung ist nur für Business-Plan-Nutzer verfügbar",
+    "phaseReorderingRestricted": "Phasenumordnung ist nur für Business-Plan-Nutzer verfügbar"
+  },
+  "list": {
+    "taskNameColumn": "Aufgabenname",
+    "addNewPhase": "Neue Phase hinzufügen",
+    "addNewStatus": "Neuen Status hinzufügen",
+    "noTasksAvailable": "Keine Aufgaben verfügbar",
+    "setDates": "Termine festlegen",
+    "clickToEditDates": "Klicken Sie hier, um Daten zu bearbeiten"
+  },
+  "roadmap": {
+    "phasesAndTasks": "Phasen & Aufgaben",
+    "tasksCount": "Aufgaben",
+    "complete": "abgeschlossen",
+    "dragDisabledInChronological": "Wechseln Sie zur manuellen Reihenfolge, um die Phasen per Drag & Drop neu anzuordnen"
+  },
+  "unscheduledTasksTitle": "Ungeplante Aufgaben",
+  "noUnscheduledTasks": "Keine ungeplanten Aufgaben verfügbar."
+}

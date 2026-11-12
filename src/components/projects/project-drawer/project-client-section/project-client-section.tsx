@@ -1,0 +1,177 @@
+import { createClient } from '@/features/settings/client/clientSlice';
+import { clientsApiService } from '@/api/clients/clients.api.service';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { IClient, IClientsViewModel } from '@/types/client.types';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import { QuestionCircleOutlined } from '@/shared/antd-imports';
+import {
+  AutoComplete,
+  Flex,
+  Form,
+  FormInstance,
+  Spin,
+  Tooltip,
+  Typography,
+} from '@/shared/antd-imports';
+import { TFunction } from 'i18next';
+import { useEffect, useState } from 'react';
+import { safeTextDisplay } from '@/utils/html-entities';
+
+interface ProjectClientSectionProps {
+  clients: IClientsViewModel;
+  form: FormInstance;
+  t: TFunction;
+  project: IProjectViewModel | null;
+  loadingClients: boolean;
+  disabled: boolean;
+}
+
+const ProjectClientSection = ({
+  clients,
+  form,
+  t,
+  project = null,
+  loadingClients = false,
+  disabled = false,
+}: ProjectClientSectionProps) => {
+  const dispatch = useAppDispatch();
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [clientOptionsData, setClientOptionsData] = useState<IClient[]>([]);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+
+  const getClientDisplayName = (client: { company_name?: string; name?: string }) => {
+    const companyName = client.company_name?.trim();
+    if (companyName) {
+      return companyName;
+    }
+
+    return client.name?.trim() || '';
+  };
+
+  useEffect(() => {
+    const loadClients = async () => {
+      setLoadingSearch(true);
+
+      try {
+        const response = await clientsApiService.getClientsLookup();
+
+        if (response.done && Array.isArray(response.body)) {
+          setClientOptionsData(response.body);
+        }
+      } catch (error) {
+        console.error('Failed to load clients:', error);
+        setClientOptionsData([]);
+      } finally {
+        setLoadingSearch(false);
+      }
+    };
+
+    loadClients();
+  }, []);
+
+  const clientOptions = [
+    ...clientOptionsData.map((client, index) => ({
+      key: index,
+      value: client.id,
+      label: safeTextDisplay(getClientDisplayName(client)),
+      displayName: getClientDisplayName(client),
+    })),
+    ...(searchTerm && clientOptionsData.length === 0 && !loadingClients && !loadingSearch
+      ? [
+          {
+            key: 'create',
+            value: 'create',
+            label: (
+              <>
+                + {t('add')} <Typography.Text strong>{searchTerm}</Typography.Text>{' '}
+                {t('asClient').toLowerCase()}
+              </>
+            ),
+          },
+        ]
+      : []),
+  ];
+
+  const handleClientSelect = async (value: string, option: any) => {
+    if (option.key === 'create') {
+      const res = await dispatch(createClient({ name: searchTerm })).unwrap();
+      if (res.done) {
+        setSearchTerm('');
+        form.setFieldsValue({
+          client_name: res.body.name,
+          client_id: res.body.id,
+        });
+      }
+      return;
+    }
+    form.setFieldsValue({
+      client_name: option.displayName || option.label,
+      client_id: option.value,
+    });
+  };
+
+  const handleClientChange = (value: string) => {
+    setSearchTerm(value);
+    form.setFieldsValue({ client_name: value });
+  };
+
+  const handleClientSearch = async (value: string): Promise<void> => {
+    setSearchTerm(value);
+    form.setFieldValue('client_name', value);
+    setLoadingSearch(true);
+
+    try {
+      const response = await clientsApiService.getClientsLookup(value);
+
+      if (response.done && Array.isArray(response.body)) {
+        setClientOptionsData(response.body);
+      }
+    } catch (error) {
+      console.error('Failed to search clients:', error);
+      setClientOptionsData([]);
+    } finally {
+      setLoadingSearch(false);
+    }
+  };
+
+  return (
+    <>
+      <Form.Item name="client_id" hidden initialValue={''}>
+        <input />
+      </Form.Item>
+      <Form.Item
+        name="client_name"
+        label={
+          <Typography.Text>
+            {t('client')}&nbsp;
+            <Tooltip title={t('youCanManageClientsUnderSettings')}>
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </Typography.Text>
+        }
+      >
+        <AutoComplete
+          options={clientOptions}
+          allowClear
+          onSearch={handleClientSearch}
+          onSelect={handleClientSelect}
+          onChange={handleClientChange}
+          placeholder={t('typeToSearchClients')}
+          popupRender={menu => (
+            <>
+              {(loadingClients || loadingSearch) && (
+                <Flex justify="center" align="center" style={{ height: '100px' }}>
+                  <Spin />
+                </Flex>
+              )}
+              {menu}
+            </>
+          )}
+          disabled={disabled}
+        />
+      </Form.Item>
+    </>
+  );
+};
+
+export default ProjectClientSection;

@@ -1,0 +1,16 @@
+{
+  "createTaskTemplate": "Criar Template de Tarefa",
+  "editTaskTemplate": "Editar Template de Tarefa",
+  "cancelText": "Cancelar",
+  "saveText": "Salvar",
+  "templateNameText": "Nome do Template",
+  "templateNameRequired": "O nome do modelo é obrigatório",
+  "selectedTasks": "Tarefas Selecionadas",
+  "removeTask": "Remover",
+  "cancelButton": "Cancelar",
+  "saveButton": "Salvar",
+  "includeSubtasks": "Incluir hierarquia de subtarefas",
+  "subtasksLabel": "subtarefa(s)",
+  "subtaskCount": "{{count}} subtarefa(s)",
+  "subtaskHierarchyInfo": "Quando marcada, as subtarefas são salvas na tarefa pai. Quando desmarcada, as subtarefas são salvas como tarefas principais separadas."
+}

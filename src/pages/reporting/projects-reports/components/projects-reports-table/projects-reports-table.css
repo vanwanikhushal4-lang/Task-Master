@@ -1,0 +1,11 @@
+/* Category column: constrain cell so long names truncate inside the pill */
+.projects-reports-table td.category-cell {
+  max-width: 200px !important;
+  overflow: hidden !important;
+}
+
+/* Project Update column: constrain cell to prevent row expansion */
+.projects-reports-table td.project-update-cell {
+  max-width: 200px !important;
+  overflow: hidden !important;
+}

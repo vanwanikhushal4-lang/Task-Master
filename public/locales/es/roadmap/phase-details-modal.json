@@ -1,0 +1,42 @@
+{
+  "title": "Detalles de la fase",
+  "overview": {
+    "title": "Resumen",
+    "totalTasks": "Tareas totales",
+    "completion": "Finalización",
+    "progress": "Progreso"
+  },
+  "timeline": {
+    "title": "Cronología",
+    "startDate": "Fecha de inicio",
+    "endDate": "Fecha de finalización",
+    "status": "Estado",
+    "notSet": "No establecido",
+    "statusLabels": {
+      "upcoming": "Próximas",
+      "active": "En progreso",
+      "overdue": "Vencido",
+      "notScheduled": "No programado"
+    }
+  },
+  "taskBreakdown": {
+    "title": "Desglose de tareas",
+    "completed": "Completado",
+    "pending": "Pendiente",
+    "overdue": "Vencido"
+  },
+  "phaseColor": {
+    "title": "Color de la Fase",
+    "description": "Color del identificador de fase"
+  },
+  "tasksInPhase": {
+    "title": "Tareas en esta Fase",
+    "noTasks": "No hay tareas en esta fase.",
+    "priority": "Prioridad",
+    "assignees": "Asignados",
+    "dueDate": "Fecha de vencimiento",
+    "startDate": "Fecha de inicio",
+    "noAssignees": "Sin asignar",
+    "noDueDate": "Sin fecha de vencimiento"
+  }
+}

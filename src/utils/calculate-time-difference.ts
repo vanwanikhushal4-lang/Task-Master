@@ -1,0 +1,72 @@
+import {
+  differenceInSeconds,
+  differenceInMinutes,
+  differenceInHours,
+  differenceInDays,
+  differenceInWeeks,
+  differenceInMonths,
+  differenceInYears,
+  formatDistanceToNow,
+} from 'date-fns';
+import { enUS } from 'date-fns/locale/en-US';
+import { es } from 'date-fns/locale/es';
+import { pt } from 'date-fns/locale/pt';
+import { de } from 'date-fns/locale/de';
+import { zhCN } from 'date-fns/locale/zh-CN';
+import { sq } from 'date-fns/locale/sq';
+import { pl } from 'date-fns/locale/pl';
+import { fr } from 'date-fns/locale/fr';
+import { getLanguageFromLocalStorage } from './language-utils';
+
+const JUST_NOW: Record<string, string> = {
+  en: 'Just now',
+  es: 'Justo ahora',
+  pt: 'Agora mesmo',
+  de: 'Gerade jetzt',
+  zh: '刚刚',
+  zh_cn: '刚刚',
+  alb: 'Sapo tani',
+  pl: 'Przed chwilą',
+  fr: "À l'instant",
+};
+
+const DATE_FNS_LOCALE: Record<string, typeof enUS> = {
+  en: enUS,
+  es: es,
+  pt: pt,
+  de: de,
+  zh_cn: zhCN,
+  alb: sq,
+  pl: pl,
+  fr: fr,
+};
+
+export function calculateTimeDifference(timestamp: string | Date, justNow?: string): string {
+  const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+  const localeString = getLanguageFromLocalStorage();
+  const locale = DATE_FNS_LOCALE[localeString] || enUS;
+  const resolvedJustNow = justNow ?? JUST_NOW[localeString] ?? JUST_NOW.en;
+  const now = new Date();
+
+  const diffInSeconds = differenceInSeconds(now, date);
+  if (diffInSeconds < 60) {
+    return resolvedJustNow;
+  }
+
+  const distanceFunctions = [
+    differenceInYears,
+    differenceInMonths,
+    differenceInWeeks,
+    differenceInDays,
+    differenceInHours,
+    differenceInMinutes,
+  ];
+
+  for (const distanceFunction of distanceFunctions) {
+    if (distanceFunction(now, date) > 0) {
+      return formatDistanceToNow(date, { addSuffix: true, locale });
+    }
+  }
+
+  return resolvedJustNow;
+}

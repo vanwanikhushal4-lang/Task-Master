@@ -1,0 +1,342 @@
+{
+  "upgradeNowButton": "Jetzt upgraden",
+  "comingSoonTag": "Demnächst",
+  "clientPortalMockups": {
+    "requests": {
+      "statusAccepted": "Angenommen",
+      "statusPending": "Ausstehend",
+      "statusRejected": "Abgelehnt"
+    },
+    "services": {
+      "statusActive": "Aktiv"
+    }
+  },
+  "cards": {
+    "finance": {
+      "overview": {
+        "title": "Finanzübersicht",
+        "description": "Budget, tatsächliche Kosten und Abweichungen werden für alle Projekte an einem Ort zusammengefasst.",
+        "features": [
+          "Budget vs. tatsächliche Kosten pro Projekt",
+          "Portfolioweite Varianz und Auslastung",
+          "Projekte, die Aufmerksamkeit erfordern, werden automatisch gekennzeichnet",
+          "Exportierbar nach Excel"
+        ]
+      },
+      "expenses": {
+        "title": "Ausgaben",
+        "description": "Alle Fixkosten, die zu Projektaufgaben in Ihrem Team hinzugefügt werden, werden an einem Ort verfolgt.",
+        "features": [
+          "Protokollieren Sie Fixkosten für jede Aufgabe",
+          "Sehen Sie sich die Ausgaben nach Projekt und Beauftragtem an",
+          "Im Finanz-Rollup jedes Projekts enthalten",
+          "Exportierbare Ausgabenhistorie"
+        ]
+      },
+      "profitability": {
+        "title": "Rentabilität",
+        "description": "Sehen Sie sich die Gewinnspannen nach Projekt und Team an, sobald diese Funktion verfügbar ist.",
+        "features": [
+          "Umsatz vs. Kosten pro Projekt",
+          "Gewinnmargentrends im Laufe der Zeit",
+          "Aufschlüsselung der Rentabilität auf Teamebene",
+          "Exportfähige Rentabilitätsberichte"
+        ]
+      },
+      "budgets": {
+        "title": "Budgetplanung",
+        "description": "Legen Sie Budgets pro Projekt fest und verfolgen Sie die Ausgaben im Vergleich dazu in Echtzeit.",
+        "features": [
+          "Projektbudgetplanung",
+          "Ausgabenverfolgung in Echtzeit",
+          "Benachrichtigungen über Budgetüberschreitungen",
+          "Budget vs. tatsächliche Berichterstattung"
+        ]
+      },
+      "invoices": {
+        "title": "Rechnungen",
+        "description": "Erstellen, versenden und verfolgen Sie Kundenrechnungen, ohne Velox zu verlassen.",
+        "features": [
+          "Erstellen Sie Rechnungen aus erfasster Zeit und Ausgaben",
+          "Verfolgen Sie bezahlte, ausstehende und überfällige Rechnungen",
+          "Kundenorientiertes Rechnungsportal",
+          "Zahlungsstatus auf einen Blick"
+        ]
+      },
+      "billableTime": {
+        "title": "Abrechenbare Zeit",
+        "description": "Verfolgen Sie abrechenbare und nicht abrechenbare Stunden für jedes Projekt und jeden Teamkollegen.",
+        "features": [
+          "Aufschlüsselung abrechenbar vs. nicht abrechenbar",
+          "Einnahmen aus abrechnungsfähigen Stunden",
+          "Abrechnungsfähige Tarife pro Teamkollege",
+          "Exportierbare Stundenzettel für die Abrechnung"
+        ]
+      },
+      "utilization": {
+        "title": "Auslastung",
+        "description": "Sehen Sie, wie vollständig die Zeit Ihres Teams auf aktive Projekte verteilt ist.",
+        "features": [
+          "Teamauslastung pro Woche oder Monat",
+          "Über- und unterbesetzte Teamkollegen",
+          "Kapazitätsplanung auf einen Blick",
+          "Nutzungstrends im Zeitverlauf"
+        ]
+      },
+      "forecasts": {
+        "title": "Prognosen",
+        "description": "Projizieren Sie zukünftige Einnahmen und Kosten basierend auf Ihrer aktiven Pipeline.",
+        "features": [
+          "Umsatz- und Kostenprognose",
+          "Prognostizierte Gewinnmargen",
+          "Pipelinebasierte Prognosen",
+          "Prognosetrends im Monatsvergleich"
+        ]
+      },
+      "generic": {
+        "title": "Finanzen",
+        "description": "Verfolgen Sie Rentabilität, Budgets, Rechnungen und Ausgaben für jedes Projekt an einem Ort.",
+        "features": [
+          "Verfolgung der Projektrentabilität",
+          "Budgets und Prognosen",
+          "Rechnungsstellung und Kostenverfolgung",
+          "Abrechnungsfähige Zeit- und Nutzungsberichte"
+        ]
+      }
+    },
+    "planner": {
+      "schedule": {
+        "title": "Zeitplan",
+        "description": "Sehen Sie sich den Zeitplan Ihres gesamten Teams an und weisen Sie Aufgaben auf einen Blick zu.",
+        "features": [
+          "Teamweites wöchentliches und monatliches Zeitplanraster",
+          "Planung per Drag-and-Assign",
+          "Kapazitätskonflikte werden automatisch gekennzeichnet",
+          "Aktualisierungen in Echtzeit, wenn Arbeit zugewiesen wird"
+        ]
+      },
+      "timeline": {
+        "title": "Zeitachse",
+        "description": "Planen Sie jedes Projekt auf einer zoombaren Zeitleiste.",
+        "features": [
+          "Projektzeitpläne im Gantt-Stil",
+          "Ziehen Sie, um das Start- und Enddatum anzupassen",
+          "Projektübergreifende Abhängigkeitsansicht",
+          "Zoomen Sie von Tagen auf Jahre"
+        ]
+      },
+      "workload": {
+        "title": "Arbeitsbelastung",
+        "description": "Gleichen Sie die Kapazitäten Ihres Teams aus, bevor Sie es überbeanspruchen.",
+        "features": [
+          "Pro Person zugewiesene Stunden im Vergleich zu den verfügbaren Stunden",
+          "Warnungen bei Über- und Unterbelegung",
+          "Kapazitätsplanung über aktive Projekte hinweg",
+          "Arbeitsbelastungstrends im Laufe der Zeit"
+        ]
+      }
+    },
+    "clientPortal": {
+      "clients": {
+        "title": "Kunden",
+        "description": "Bieten Sie Ihren Kunden ein Markenportal, um den Projektfortschritt zu verfolgen, Dateien auszutauschen und auf dem Laufenden zu bleiben.",
+        "features": [
+          "Gebrandetes Kundenportal zum Teilen des Projektfortschritts",
+          "Kundenanfragen, Genehmigungen und Nachrichten",
+          "Rechnungsstellung direkt gegenüber dem Kunden",
+          "Unbegrenzte Kundenkonten"
+        ]
+      },
+      "invoices": {
+        "title": "Rechnungen",
+        "description": "Erstellen, versenden und verfolgen Sie Kundenrechnungen, ohne Velox zu verlassen.",
+        "features": [
+          "Erstellen Sie Rechnungen aus erfasster Zeit und Ausgaben",
+          "Verfolgen Sie bezahlte, ausstehende und überfällige Rechnungen",
+          "Kundenorientiertes Rechnungsportal",
+          "Zahlungsstatus auf einen Blick"
+        ]
+      },
+      "settings": {
+        "title": "Portal-Einstellungen",
+        "description": "Passen Sie Ihr Kundenportal mit Ihrem eigenen Branding an.",
+        "features": [
+          "Laden Sie Ihr eigenes Logo hoch",
+          "Marken-Header im gesamten Portal",
+          "Konsistente visuelle Identität für Kunden",
+          "Firmendetails, die Kunden sehen können"
+        ]
+      },
+      "projects": {
+        "title": "Portalprojekte",
+        "description": "Wählen Sie aus, welche Projekte Kunden sehen können und was darin geteilt wird.",
+        "features": [
+          "Switch the Client Portal on per project",
+          "Share tasks, files and milestones one by one",
+          "Everything stays Internal Only until you share it",
+          "Client-facing status, phase and progress"
+        ]
+      },
+      "approvals": {
+        "title": "Zulassungen",
+        "description": "Erhalten Sie von Kunden eine formelle, aufgezeichnete Freigabe der genauen Dateiversionen.",
+        "features": [
+          "Ask a Client Admin to approve a file, milestone or task",
+          "The exact version or revision is recorded",
+          "Every decision is kept, with a full history",
+          "Overdue and awaiting approvals at a glance"
+        ]
+      },
+      "changeRequests": {
+        "title": "Änderungswünsche",
+        "description": "Überprüfen, schätzen und entscheiden Sie über Umfangsänderungen und setzen Sie die genehmigten Änderungen dann in die Tat um.",
+        "features": [
+          "Clients submit scope changes from their portal",
+          "Estimate, approve, reject or ask for more information",
+          "Convert approved requests into tasks",
+          "Create quotes and invoices from a request"
+        ]
+      },
+      "discussions": {
+        "title": "Diskussionen",
+        "description": "Sprechen Sie mit Kunden über die genaue Aufgabe, Datei oder Genehmigung, wobei interne Kommentare vertraulich bleiben.",
+        "features": [
+          "Conversations attached to the work they are about",
+          "Client-visible replies and private internal comments",
+          "Mention client users, never by accident in internal notes",
+          "Unread tracking across your team"
+        ]
+      },
+      "auditLog": {
+        "title": "Audit-Protokoll",
+        "description": "Eine manipulationssichere Aufzeichnung der Kunden- und Teamaktivitäten.",
+        "features": [
+          "Access, sharing, file, approval and change request events",
+          "Every entry is timestamped and attributed",
+          "Filter by client, event type or who acted",
+          "Export the filtered view as CSV"
+        ]
+      },
+      "preview": {
+        "title": "Kundenportal",
+        "description": "Sehen Sie genau, was ein Kunde sieht, bevor Sie etwas teilen.",
+        "features": [
+          "Preview as any active client user",
+          "Built from the same rules the portal enforces",
+          "See what is hidden from that user",
+          "Check what each role can do"
+        ]
+      }
+    }
+  },
+  "financeMockups": {
+    "overview": {
+      "paginationText": "{{from}}-{{to}} von {{total}}",
+      "perPageText": "{{count}} / Seite"
+    },
+    "profitability": {
+      "totalRevenue": "Gesamtumsatz",
+      "totalCost": "Gesamtkosten",
+      "netProfit": "Nettogewinn",
+      "avgMargin": "Durchschn. Marge",
+      "marginByProjectCard": "Gewinnspanne nach Projekt"
+    },
+    "budgets": {
+      "totalBudget": "Gesamtbudget",
+      "spent": "Ausgegeben",
+      "remaining": "Übrig",
+      "overBudget": "Über dem Budget",
+      "budgetVsSpendCard": "Budget vs. Ausgaben nach Projekt"
+    },
+    "invoices": {
+      "totalInvoiced": "Gesamtbetrag in Rechnung gestellt",
+      "paid": "Bezahlt",
+      "pending": "Ausstehend",
+      "overdue": "Überfällig",
+      "invoicesCard": "Rechnungen",
+      "invoiceNoColumn": "Rechnungsnummer",
+      "clientColumn": "Kunde",
+      "amountColumn": "Betrag",
+      "statusColumn": "Alle Status"
+    },
+    "billableTime": {
+      "billableHours": "Abrechnungsfähige Stunden",
+      "nonBillableHours": "Nicht abrechenbare Stunden",
+      "billablePercent": "Abrechenbarer %",
+      "billableRevenue": "Abrechenbarer Umsatz",
+      "byTeamMemberCard": "Abrechnungsfähige Zeit nach Teammitglied",
+      "teamMemberColumn": "Teammitglied",
+      "billableHoursColumn": "Abrechnungsfähige Stunden"
+    },
+    "utilization": {
+      "avgUtilization": "Durchschn. Nutzung",
+      "teamSize": "Teamgröße",
+      "overutilized": "Überbeansprucht",
+      "underutilized": "Unterausgelastet",
+      "byTeamMemberCard": "Nutzung durch Teammitglied",
+      "teamMemberColumn": "Teammitglied"
+    },
+    "forecasts": {
+      "forecastedRevenue": "Prognostizierter Umsatz",
+      "forecastedCost": "Prognostizierte Kosten",
+      "projectedMargin": "Projizierte Marge",
+      "forecastWindow": "Prognosefenster",
+      "revenueTrendCard": "Umsatzprognosetrend"
+    },
+    "expenses": {
+      "pageTitle": "Projektausgaben",
+      "pageSubtitle": "Alle Fixkosten, die zu Projektaufgaben im gesamten Team hinzugefügt wurden.",
+      "projectColumn": "Projekt",
+      "taskColumn": "Aufgabe",
+      "amountColumn": "Betrag",
+      "assigneeColumn": "Zugewiesen",
+      "dateColumn": "Datum",
+      "rowsPerPage": "Zeilen pro Seite: {{count}}"
+    }
+  },
+  "plannerMockup": {
+    "chrome": {
+      "daysOption": "Tage",
+      "weeksOption": "Wochen",
+      "monthsOption": "Monate",
+      "quartersOption": "Viertel",
+      "yearsOption": "Jahre",
+      "dayOption": "Tag",
+      "weekOption": "Woche",
+      "monthOption": "Monat",
+      "membersOption": "Mitglieder",
+      "projectsOption": "Projekte",
+      "priority": "Priorität",
+      "category": "Kategorie",
+      "projectStatus": "Projektstatus",
+      "projectPriority": "Projektpriorität",
+      "taskLegend": "Aufgabe",
+      "projectBlockLegend": "Projektblock"
+    },
+    "schedule": {
+      "scheduledHours": "Geplante Stunden",
+      "membersScheduled": "Mitglieder geplant",
+      "unassignedHours": "Nicht zugewiesene Stunden",
+      "overbookedMembers": "Überbuchte Mitglieder",
+      "memberColumn": "Mitglied",
+      "thisWeekCard": "Diese Woche"
+    },
+    "timeline": {
+      "activeProjects": "Aktive Projekte",
+      "onTrack": "Auf dem richtigen Weg",
+      "atRisk": "Gefährdet",
+      "avgCompletion": "Durchschn. Fertigstellung",
+      "projectTimelineCard": "Projektzeitleiste"
+    },
+    "workload": {
+      "totalCapacity": "Gesamtkapazität",
+      "allocatedHours": "Zugewiesene Stunden",
+      "availableHours": "Verfügbare Stunden",
+      "overallocatedMembers": "Überlastete Mitglieder",
+      "utilColumn": "UTIL",
+      "teamTotalRow": "Team gesamt"
+    }
+  },
+  "paginationText": "{{from}}-{{to}} von {{total}}",
+  "perPageText": "{{count}} / Seite"
+}

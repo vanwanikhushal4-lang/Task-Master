@@ -1,0 +1,317 @@
+import { defineConfig, loadEnv } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import fs from 'fs';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
+import { addonsPlugin } from './vite-plugin-addons';
+
+export default defineConfig(({ command, mode }) => {
+  const isProduction = command === 'build';
+  const buildTimestamp = Date.now().toString();
+
+  const env = loadEnv(mode, process.cwd(), '');
+  const hasSentryToken = Boolean(env.VITE_SENTRY_AUTH_TOKEN);
+  const shouldGenerateSourcemap =
+    hasSentryToken || env.VITE_GENERATE_SOURCEMAP === 'true';
+
+  return {
+    // **Esbuild optimization: fast multi-threaded JS transform and debug stripping**
+    esbuild: isProduction
+      ? {
+          drop: ['debugger'],
+          pure: ['console.log', 'console.info', 'console.debug'],
+          legalComments: 'none',
+        }
+      : undefined,
+
+    // **Plugins**
+    plugins: [
+      react(),
+      addonsPlugin(env),
+      // Sentry plugin for source maps upload in production
+      // sentryVitePlugin returns an array of plugins, so we spread it
+      ...(isProduction && hasSentryToken
+        ? sentryVitePlugin({
+            org: env.VITE_SENTRY_ORG,
+            project: env.VITE_SENTRY_PROJECT,
+            authToken: env.VITE_SENTRY_AUTH_TOKEN,
+            telemetry: false,
+          })
+        : []),
+      // Custom plugin to generate version.json for reliable update detection
+      {
+        name: 'generate-version-file',
+        generateBundle() {
+          // Generate version.json with build metadata
+          const versionData = {
+            version: env.npm_package_version || '1.0.0',
+            buildTime: buildTimestamp,
+            buildId: buildTimestamp,
+          };
+
+          this.emitFile({
+            type: 'asset',
+            fileName: 'version.json',
+            source: JSON.stringify(versionData, null, 2),
+          });
+        },
+      },
+      // Custom plugin to inject build timestamp into service worker
+      {
+        name: 'inject-build-timestamp',
+        generateBundle(options, bundle) {
+          // Update service worker with build timestamp
+          const swBundle = bundle['sw.js'];
+          if (swBundle && 'source' in swBundle) {
+            // OutputAsset has 'source' property
+            const swContent = swBundle.source;
+            if (typeof swContent === 'string') {
+              const updatedSw = swContent.replace(
+                /const BUILD_TIMESTAMP = self\.location\.search\.match[^;]+;/,
+                `const BUILD_TIMESTAMP = '${buildTimestamp}';`
+              );
+              swBundle.source = updatedSw;
+            }
+          } else if (swBundle && 'code' in swBundle) {
+            // OutputChunk has 'code' property
+            const swContent = swBundle.code;
+            if (typeof swContent === 'string') {
+              const updatedSw = swContent.replace(
+                /const BUILD_TIMESTAMP = self\.location\.search\.match[^;]+;/,
+                `const BUILD_TIMESTAMP = '${buildTimestamp}';`
+              );
+              swBundle.code = updatedSw;
+            }
+          }
+
+          // Add versioning to service worker file name in production
+          if (isProduction && swBundle) {
+            bundle[`sw.js?v=${buildTimestamp}`] = swBundle;
+            delete bundle['sw.js'];
+          }
+        },
+        transformIndexHtml: {
+          order: 'post',
+          handler(html) {
+            // Inject build timestamp into HTML for service worker detection
+            return html.replace(
+              '<head>',
+              `<head>\n  <script>window.buildTimestamp = '${buildTimestamp}';</script>`
+            );
+          },
+        },
+      },
+    ],
+
+    // **Resolve**
+    resolve: {
+      alias: [
+        // Using an array with objects for clarity and easier management
+        { find: '@', replacement: path.resolve(__dirname, './src') },
+        { find: '@components', replacement: path.resolve(__dirname, './src/components') },
+        { find: '@features', replacement: path.resolve(__dirname, './src/features') },
+        { find: '@assets', replacement: path.resolve(__dirname, './src/assets') },
+        { find: '@utils', replacement: path.resolve(__dirname, './src/utils') },
+        { find: '@hooks', replacement: path.resolve(__dirname, './src/hooks') },
+        { find: '@pages', replacement: path.resolve(__dirname, './src/pages') },
+        { find: '@api', replacement: path.resolve(__dirname, './src/api') },
+        { find: '@types', replacement: path.resolve(__dirname, './src/types') },
+        { find: '@shared', replacement: path.resolve(__dirname, './src/shared') },
+        { find: '@layouts', replacement: path.resolve(__dirname, './src/layouts') },
+        { find: '@services', replacement: path.resolve(__dirname, './src/services') },
+      ],
+      // **Ensure single React instance**
+      dedupe: ['react', 'react-dom'],
+    },
+
+    // **Development Server**
+    server: {
+      port: 5173,
+      fs: {
+        allow: ['..'],
+      },
+      hmr: {
+        overlay: false,
+      },
+      // Pre-transform entry files so the first page load is faster
+      warmup: {
+        clientFiles: ['./src/index.tsx', './src/App.tsx'],
+      },
+      // Allow-list specific dev hosts (e.g., ngrok) to prevent blocked host errors
+      // Configure via VITE_ALLOWED_HOSTS environment variable (comma-separated list)
+      // Example: VITE_ALLOWED_HOSTS=host1.example.com,host2.example.com
+      allowedHosts: process.env.VITE_ALLOWED_HOSTS
+        ? process.env.VITE_ALLOWED_HOSTS.split(',')
+            .map(host => host.trim())
+            .filter(Boolean)
+        : [],
+      // **Proxy API requests to backend server**
+      proxy: {
+        '/api': {
+          target: process.env.VITE_API_URL || 'http://localhost:3000',
+          changeOrigin: true,
+          secure: false,
+        },
+        // Proxy comment/task short links to backend for Slack/Discord unfurls (crawler UA only)
+        '/velox/c': {
+          target: process.env.VITE_API_URL || 'http://localhost:3000',
+          changeOrigin: true,
+          secure: false,
+          bypass(req) {
+            const ua = req.headers['user-agent'] || '';
+            const isCrawler =
+              /bot|crawl|slurp|spider|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Discordbot|Slackbot|Slack-ImgProxy|SkypeUriPreview|WhatsApp|TelegramBot|preview/i.test(
+                ua
+              );
+            if (isCrawler) {
+              return undefined; // proxy to backend for OG HTML
+            }
+            return req.url; // normal browser → Vite SPA
+          },
+        },
+        '/velox/t': {
+          target: process.env.VITE_API_URL || 'http://localhost:3000',
+          changeOrigin: true,
+          secure: false,
+          bypass(req) {
+            const ua = req.headers['user-agent'] || '';
+            const isCrawler =
+              /bot|crawl|slurp|spider|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Discordbot|Slackbot|Slack-ImgProxy|SkypeUriPreview|WhatsApp|TelegramBot|preview/i.test(
+                ua
+              );
+            if (isCrawler) {
+              return undefined;
+            }
+            return req.url;
+          },
+        },
+        '/socket.io': {
+          target: process.env.VITE_SOCKET_URL || 'ws://localhost:3000',
+          changeOrigin: true,
+          ws: true,
+        },
+      },
+    },
+
+    // **Build**
+    build: {
+      // **Target**
+      target: ['es2020'], // Updated to a more modern target, adjust according to your needs
+
+      // **Output**
+      outDir: process.env.VITE_BUILD_OUTDIR || 'build',
+      assetsDir: 'assets',
+      cssCodeSplit: true,
+
+      // **Sourcemaps**
+      // Generate hidden sourcemaps in production only when Sentry upload is active or explicitly requested
+      sourcemap: !isProduction ? 'inline' : shouldGenerateSourcemap ? 'hidden' : false,
+
+      // **Module Preload Polyfill** - Helps with chunk loading reliability
+      modulePreload: {
+        polyfill: true,
+      },
+
+      // **Minification**
+      // Native esbuild minifier is 10x-20x faster than terser and leverages multi-core processing
+      minify: isProduction ? 'esbuild' : false,
+
+      // **Chunk Size Warnings**
+      chunkSizeWarningLimit: 1000,
+
+      // **Rollup Options**
+      rollupOptions: {
+        // Suppress noisy third-party warnings (gantt-task-react misplaced PURE annotations)
+        onwarn(warning, warn) {
+          if (
+            warning.code === 'INVALID_ANNOTATION' &&
+            warning.id?.includes('gantt-task-react')
+          ) {
+            return;
+          }
+          warn(warning);
+        },
+        output: {
+          // **Granular chunking strategy for better parallelism and cache reuse**
+          // Note: react/react-dom are intentionally NOT in manualChunks — Vite already
+          // dedupes them; forcing a react-vendor chunk produces an empty file.
+          manualChunks: {
+            'react-router': ['react-router-dom'],
+            'antd-core': ['antd'],
+            'antd-icons': ['@ant-design/icons'],
+            charts: ['chart.js', 'react-chartjs-2', 'chartjs-plugin-datalabels'],
+            gantt: ['gantt-task-react'],
+            'pdf-export': ['html2canvas', 'jspdf'],
+            socket: ['socket.io-client'],
+            i18n: [
+              'i18next',
+              'react-i18next',
+              'i18next-browser-languagedetector',
+              'i18next-http-backend',
+            ],
+          },
+
+          // **File Naming Strategies**
+          chunkFileNames: chunkInfo => {
+            const facadeModuleId = chunkInfo.facadeModuleId
+              ? chunkInfo.facadeModuleId.split('/').pop()
+              : 'chunk';
+            return `assets/js/[name]-[hash].js`;
+          },
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: assetInfo => {
+            if (!assetInfo.name) return 'assets/[name]-[hash].[ext]';
+            const info = assetInfo.name.split('.');
+            let extType = info[info.length - 1];
+            if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+              extType = 'img';
+            } else if (/woff2?|eot|ttf|otf/i.test(extType)) {
+              extType = 'fonts';
+            }
+            return `assets/${extType}/[name]-[hash].[ext]`;
+          },
+        },
+
+        // **External dependencies (if any should be externalized)**
+        external: [],
+
+        // **Preserve modules to avoid context issues**
+        preserveEntrySignatures: 'strict',
+      },
+
+      // **Experimental features for better performance**
+      reportCompressedSize: false, // Disable to speed up build
+
+      // **CSS optimization**
+      cssMinify: isProduction,
+    },
+
+    // **Optimization**
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'antd',
+        '@ant-design/icons',
+        'socket.io-client',
+        'i18next',
+        'react-i18next',
+        'i18next-browser-languagedetector',
+        'i18next-http-backend',
+      ],
+      exclude: [
+        // Add any packages that should not be pre-bundled
+      ],
+    },
+
+    // **Define global constants**
+    define: {
+      __DEV__: !isProduction,
+      __BUILD_TIMESTAMP__: JSON.stringify(buildTimestamp),
+    },
+
+    // **Public Directory** - sw.js will be automatically copied from public/ to build/
+    publicDir: 'public',
+  };
+});

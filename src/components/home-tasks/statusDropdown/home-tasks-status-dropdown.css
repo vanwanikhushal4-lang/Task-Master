@@ -1,0 +1,24 @@
+/* Clickable wrapper around TruncatedColoredTag — keeps the same pill look as
+   Home > Log Time Status while remaining a status-change control. */
+.home-status-tag-trigger {
+  all: unset;
+  display: inline-flex;
+  max-width: 100%;
+  min-width: 0;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.home-status-tag-trigger:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #1890ff);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.home-status-dropdown .ant-dropdown-menu {
+  padding: 4px 0 !important;
+  min-width: 150px;
+  max-width: 220px;
+  border-radius: 8px;
+  overflow: hidden;
+}
